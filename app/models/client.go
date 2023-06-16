@@ -14,6 +14,12 @@ type Client struct {
 	IsDeleted bool      `json:"is_deleted"`
 }
 
+type ClientModelAdd struct {
+	Username string `json:"username" binding:"required" gorm:"uniqueIndex;not null"`
+	Email    string `json:"email" binding:"required" gorm:"uniqueIndex;not null"`
+	Fullname string `json:"fullname" gorm:"not null" binding:"required"`
+}
+
 func (Client) TableName() string {
 	return "clients"
 }

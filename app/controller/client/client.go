@@ -73,6 +73,16 @@ func ClientSSE(c *gin.Context) {
 
 }
 
+// @Summary Get a client with SSE
+// @Description Get a client with SSE
+// @Accept text/event-stream
+// @Produce text/event-stream
+// @Tags Users
+// @Param        id    query     string  false  "query by id"  models.Client
+// @Success 200 {object} models.Client
+// @Failure 404 {object} ErrorResponse
+// @Failure 400 {object} ErrorResponse
+// @Router /data-stream [get]
 func DataStreamWithMemchaced(c *gin.Context) {
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")
@@ -141,8 +151,21 @@ func DataStreamWithMemchaced(c *gin.Context) {
 
 }
 
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
 var clientChannels = make(chan []models.Client)
 
+// @Summary Create a new user
+// @Description Create a new user with the provided details
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body models.ClientModelAdd true "User object"
+// @Success 200 {object} models.Client
+// @Failure 400 {object} ErrorResponse
+// @Router /client [post]
 func AddClient(c *gin.Context) {
 	var Client *models.Client
 
@@ -161,7 +184,11 @@ func AddClient(c *gin.Context) {
 		UpdatedBy: 0,
 		IsDeleted: false,
 	}
-	db.DB.Create(&newUser)
+	if err := db.DB.Create(&newUser).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+
 	id := strconv.FormatUint(newUser.ID, 10)
 	// Marshal and store the data in Memcached for future use
 	log.Print("TEST ", id)
@@ -178,6 +205,14 @@ func AddClient(c *gin.Context) {
 
 }
 
+// @Summary Get a client by memchaced key value
+// @Description Get a user by their memchaced key value
+// @Tags Users
+// @Param        id    query     string  false  "query by id"  models.Client
+// @Success 200 {object} models.Client
+// @Failure 404 {object} ErrorResponse
+// @Failure 400 {object} ErrorResponse
+// @Router /client [get]
 func GetDataByMemchaced(c *gin.Context) {
 	var data models.Client
 	id := c.Query("id")
@@ -190,9 +225,11 @@ func GetDataByMemchaced(c *gin.Context) {
 		err = json.Unmarshal(item.Value, &data)
 		if err != nil {
 			log.Println("Error unmarshaling data from Memcached:", err)
+			c.JSON(http.StatusBadRequest, data)
 		}
 	} else {
 		log.Println("Error fetching data from Memcached:", err)
+		c.JSON(http.StatusBadRequest, data)
 	}
 	c.JSON(http.StatusOK, data)
 }

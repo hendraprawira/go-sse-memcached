@@ -1,0 +1,125 @@
+definitions:
+  controller.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Client:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: integer
+      is_deleted:
+        type: boolean
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      username:
+        type: string
+    required:
+    - email
+    - fullname
+    - username
+    type: object
+  models.ClientModelAdd:
+    properties:
+      email:
+        type: string
+      fullname:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - fullname
+    - username
+    type: object
+info:
+  contact: {}
+paths:
+  /client:
+    get:
+      description: Get a user by their memchaced key value
+      parameters:
+      - description: query by id
+        in: query
+        name: id
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Client'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: Get a client by memchaced key value
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided details
+      parameters:
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClientModelAdd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Client'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: Create a new user
+      tags:
+      - Users
+  /data-stream:
+    get:
+      consumes:
+      - text/event-stream
+      description: Get a client with SSE
+      parameters:
+      - description: query by id
+        in: query
+        name: id
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Client'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: Get a client with SSE
+      tags:
+      - Users
+swagger: "2.0"

@@ -4,8 +4,12 @@ import (
 	client "alert-map-service/app/controller/client"
 	"alert-map-service/app/db"
 
+	docs "alert-map-service/docs"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Routes() *gin.Engine {
@@ -26,12 +30,15 @@ func Routes() *gin.Engine {
 	r.MaxMultipartMemory = 8 << 20 // 8 MiB
 
 	apiUri := r.Group("/api")
+	docs.SwaggerInfo.BasePath = "/api"
 
 	clientSchema := apiUri.Group("")
 	{
+		clientSchema.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		clientSchema.GET("/clients", client.Clients)
 		clientSchema.GET("/clientSSE", client.ClientSSE)
 		clientSchema.GET("/data-stream", client.DataStreamWithMemchaced)
+
 		clientSchema.POST("/client", client.AddClient)
 		clientSchema.GET("/client", client.GetDataByMemchaced)
 	}
