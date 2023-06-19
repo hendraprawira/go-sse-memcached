@@ -1,4 +1,4 @@
-package controller
+package client
 
 import (
 	"alert-map-service/app/db"
@@ -155,7 +155,7 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-var clientChannels = make(chan []models.Client)
+// var clientChannels = make(chan []models.Client)
 
 // @Summary Create a new user
 // @Description Create a new user with the provided details

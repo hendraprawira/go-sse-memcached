@@ -8,8 +8,8 @@ import (
 
 var MC *memcache.Client
 
-func ConnectMemchaced() {
-	MEMCHACED_DB := os.Getenv("MEMCHACED_DB")
-	mc := memcache.New(MEMCHACED_DB)
+func ConnectMemcached() {
+	MEMCACHED_DB := os.Getenv("MEMCACHED_DB")
+	mc := memcache.New(MEMCACHED_DB)
 	MC = mc
 }

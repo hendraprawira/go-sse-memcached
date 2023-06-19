@@ -16,7 +16,7 @@ func Routes() *gin.Engine {
 	// gin.SetMode(gin.ReleaseMode) // for release mod, uncomment if need it
 	r := gin.Default()
 
-	db.ConnectMemchaced()
+	db.ConnectMemcached()
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
